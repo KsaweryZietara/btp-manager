@@ -70,35 +70,14 @@ jobs:
             echo "CHART_UPDATE_PR_NUMBER=$(echo "$PR_STATUS" | tail -n 1)" >> $GITHUB_ENV
           fi
           
-      - name: Wait until "All checks passed" workflow succeeded
+      - name: All check passed
         if: env.UPDATE_CHART == 'true'
         env:
           GH_TOKEN: ${{ secrets.BOT_TOKEN }}
         run: |
-          echo "Waiting for 'All checks passed' workflow to succeed..."
-
-          for i in {1..40}; do
-            STATUS=$(gh api repos/${{ env.KYMA_BTP_MANAGER_REPO }}/check-runs \
-              --method GET \
-              -f filter=latest \
-              -F ref="refs/pull/${{ env.CHART_UPDATE_PR_NUMBER }}/head" \
-              | jq -r '.check_runs[] | select(.name == "All checks passed") | .conclusion' | head -n1)
-
-            echo $STATUS
-
-            if [ "$STATUS" = "success" ]; then
-              echo "'All checks passed' succeeded"
-              break
-            fi
-
-            if [ "$STATUS" = "failure" ] || [ "$STATUS" = "cancelled" ]; then
-              echo "'All checks passed' did NOT succeed"
-              exit 1
-            fi
-
-            echo "Waiting..."
-            sleep 30
-          done
+          RESULT=$(gh pr checks)
+          echo $RESULT
+          exit 1
 
       - name: Merge PR
         if: env.UPDATE_CHART == 'true'
