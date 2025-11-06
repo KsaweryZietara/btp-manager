@@ -78,7 +78,7 @@ jobs:
           echo "Waiting for 'All checks passed' workflow to succeed..."
 
           for i in {1..40}; do
-            STATUS=$(gh api repos/${{ env.REPOSITORY }}/check-runs \
+            STATUS=$(gh api repos/${{ env.KYMA_BTP_MANAGER_REPO }}/check-runs \
               --method GET \
               -f filter=latest \
               -F ref="refs/pull/${{ env.CHART_UPDATE_PR_NUMBER }}/head" \
