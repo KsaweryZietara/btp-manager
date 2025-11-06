@@ -76,7 +76,7 @@ jobs:
           GH_TOKEN: ${{ secrets.BOT_TOKEN }}
           PR_NUMBER: ${{ env.CHART_UPDATE_PR_NUMBER }}
         run: |
-          RESULT=$(gh pr checks $PR_NUMBER --json)
+          RESULT=$(gh pr checks $PR_NUMBER --json bucket,name,state,workflow)
           echo $RESULT
           exit 1
 
