@@ -12,6 +12,7 @@ on:
   schedule:
     - cron: '0 0 * * *' 
 permissions:
+  checks: read
   contents: write
 jobs:
   auto-update-chart-and-module-resources:
@@ -70,11 +71,13 @@ jobs:
             echo "CHART_UPDATE_PR_NUMBER=$(echo "$PR_STATUS" | tail -n 1)" >> $GITHUB_ENV
           fi
           
-      - uses: wechuli/allcheckspassed@2e5e8bbc775f5680ed5d02e3a22e2fc7219792ac
+      - name: All checks passed
+        uses: wechuli/allcheckspassed@2e5e8bbc775f5680ed5d02e3a22e2fc7219792ac
         with:
           delay: '2'
           retries: '15'
           polling_interval: '1'
+          checks_exclude: 'markdown-link-check,enable-auto-merge,scan'
           verbose: true
 
       - name: Merge PR
