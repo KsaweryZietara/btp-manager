@@ -69,6 +69,13 @@ jobs:
             PR_STATUS=$(scripts/update/create_pr_module_chart.sh)
             echo "CHART_UPDATE_PR_NUMBER=$(echo "$PR_STATUS" | tail -n 1)" >> $GITHUB_ENV
           fi
+          
+      - uses: wechuli/allcheckspassed@2e5e8bbc775f5680ed5d02e3a22e2fc7219792ac
+        with:
+          delay: '2'
+          retries: '15'
+          polling_interval: '1'
+          verbose: true
 
       - name: Merge PR
         if: env.UPDATE_CHART == 'true'
