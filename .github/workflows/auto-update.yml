@@ -74,8 +74,9 @@ jobs:
         if: env.UPDATE_CHART == 'true'
         env:
           GH_TOKEN: ${{ secrets.BOT_TOKEN }}
+          PR_NUMBER: ${{ env.CHART_UPDATE_PR_NUMBER }}
         run: |
-          RESULT=$(gh pr checks)
+          RESULT=$(gh pr checks $PR_NUMBER)
           echo $RESULT
           exit 1
 
