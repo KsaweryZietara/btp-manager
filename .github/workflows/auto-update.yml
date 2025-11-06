@@ -81,6 +81,8 @@ jobs:
             STATUS=$(gh run list \
               --json name,conclusion,headBranch \
               --jq '.[] | select(.name=="All checks passed" and .headBranch=="'${BRANCH_NAME}'") | .conclusion')
+          
+            echo $STATUS
 
             if [ "$STATUS" = "success" ]; then
               echo "All checks passed"
