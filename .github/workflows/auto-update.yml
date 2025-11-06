@@ -75,6 +75,7 @@ jobs:
         timeout-minutes: 20
         env:
           PR_NUMBER: ${{ env.CHART_UPDATE_PR_NUMBER }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           while true; do
             RESULT=$(gh pr checks "$PR_NUMBER" --json bucket,name \
