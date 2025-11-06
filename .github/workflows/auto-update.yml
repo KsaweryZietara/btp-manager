@@ -12,7 +12,6 @@ on:
   schedule:
     - cron: '0 0 * * *' 
 permissions:
-  checks: read
   contents: write
 jobs:
   auto-update-chart-and-module-resources:
@@ -71,14 +70,34 @@ jobs:
             echo "CHART_UPDATE_PR_NUMBER=$(echo "$PR_STATUS" | tail -n 1)" >> $GITHUB_ENV
           fi
           
-      - name: All checks passed
-        uses: wechuli/allcheckspassed@2e5e8bbc775f5680ed5d02e3a22e2fc7219792ac
-        with:
-          delay: '2'
-          retries: '15'
-          polling_interval: '1'
-          checks_exclude: 'markdown-link-check,enable-auto-merge,scan'
-          verbose: true
+      - name: Wait for All checks passed workflow to succeed
+        if: env.UPDATE_CHART == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.BOT_TOKEN }}
+        run: |
+          echo "Waiting for 'All checks passed' workflow to succeed"
+
+          for i in {1..20}; do
+            STATUS=$(gh run list \
+              --json name,conclusion,headBranch \
+              --jq '.[] | select(.name=="All checks passed" and .headBranch=="'${BRANCH_NAME}'") | .conclusion')
+
+            if [ "$STATUS" = "success" ]; then
+              echo "All checks passed"
+              exit 0
+            fi
+
+            if [ "$STATUS" = "failure" ]; then
+              echo "All checks passed failed"
+              exit 1
+            fi
+
+            echo "Checks not ready yet, retry $i/20..."
+            sleep 60
+          done
+
+          echo "Timed out waiting for All checks passed workflow"
+          exit 1
 
       - name: Merge PR
         if: env.UPDATE_CHART == 'true'
