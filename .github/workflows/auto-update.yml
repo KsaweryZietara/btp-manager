@@ -77,7 +77,6 @@ jobs:
           GH_TOKEN: ${{ secrets.BOT_TOKEN }}
           PR_NUMBER: ${{ env.CHART_UPDATE_PR_NUMBER }}
         run: |
-          sleep 10
           while true; do
             RESULT=$(gh pr checks "$PR_NUMBER" --json bucket,name \
               --jq '.[] | select(.name == "checks-passed") | .bucket')
@@ -88,7 +87,7 @@ jobs:
               echo "All checks passed"
               exit 0
             elif [[ "$RESULT" == "fail" || "$RESULT" == "cancel" ]]; then
-              echo "Checks failed or cancelled"
+              echo "Checks failed"
               exit 1
             fi
 
