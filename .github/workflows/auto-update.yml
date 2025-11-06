@@ -74,14 +74,11 @@ jobs:
         if: env.UPDATE_CHART == 'true'
         timeout-minutes: 20
         env:
-          GH_TOKEN: ${{ secrets.BOT_TOKEN }}
           PR_NUMBER: ${{ env.CHART_UPDATE_PR_NUMBER }}
         run: |
           while true; do
             RESULT=$(gh pr checks "$PR_NUMBER" --json bucket,name \
               --jq '.[] | select(.name == "checks-passed") | .bucket')
-
-            echo "Result: $RESULT"
 
             if [[ "$RESULT" == "pass" ]]; then
               echo "All checks passed"
